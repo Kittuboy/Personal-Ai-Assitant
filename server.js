@@ -52,7 +52,7 @@ const cors = require("cors");
 
 app.use(
   cors({
-    origin: "https://personal-ai-assitant-oy1y.onrender.com",
+    origin: "https://personal-ai-assitant-oy1y.onrender.com/voice",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
