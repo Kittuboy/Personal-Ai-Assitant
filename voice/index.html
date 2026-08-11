@@ -1,0 +1,2043 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8" />
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>JARVIS Voice Assistant</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    #102a43 0%,
+                    #020617 55%,
+                    #000 100%
+                );
+
+            color: white;
+
+            font-family:
+                Arial,
+                sans-serif;
+
+            padding: 20px;
+
+        }
+
+
+        .jarvis {
+
+            width:
+                min(500px, 92%);
+
+            padding:
+                40px 25px;
+
+            text-align: center;
+
+            border:
+                1px solid
+                rgba(
+                    0,
+                    191,
+                    255,
+                    0.25
+                );
+
+            border-radius: 25px;
+
+            background:
+                rgba(
+                    2,
+                    6,
+                    23,
+                    0.75
+                );
+
+            box-shadow:
+
+                0 0 40px
+                rgba(
+                    0,
+                    191,
+                    255,
+                    0.15
+                ),
+
+                inset 0 0 30px
+                rgba(
+                    0,
+                    191,
+                    255,
+                    0.04
+                );
+
+            backdrop-filter:
+                blur(15px);
+
+        }
+
+
+        .core {
+
+            width: 150px;
+
+            height: 150px;
+
+            margin:
+                0 auto 25px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border:
+                2px solid
+                #00bfff;
+
+            box-shadow:
+
+                0 0 20px
+                #00bfff,
+
+                0 0 60px
+                rgba(
+                    0,
+                    191,
+                    255,
+                    0.35
+                ),
+
+                inset 0 0 30px
+                rgba(
+                    0,
+                    191,
+                    255,
+                    0.2
+                );
+
+            transition:
+                0.3s;
+
+        }
+
+
+        .core.listening {
+
+            animation:
+                pulse 1s infinite;
+
+        }
+
+
+        .core.active {
+
+            border-color:
+                #22c55e;
+
+            box-shadow:
+
+                0 0 20px
+                #22c55e,
+
+                0 0 60px
+                rgba(
+                    34,
+                    197,
+                    94,
+                    0.35
+                ),
+
+                inset 0 0 30px
+                rgba(
+                    34,
+                    197,
+                    94,
+                    0.2
+                );
+
+        }
+
+
+        .core.speaking {
+
+            border-color:
+                #a855f7;
+
+            box-shadow:
+
+                0 0 20px
+                #a855f7,
+
+                0 0 70px
+                rgba(
+                    168,
+                    85,
+                    247,
+                    0.45
+                ),
+
+                inset 0 0 30px
+                rgba(
+                    168,
+                    85,
+                    247,
+                    0.2
+                );
+
+            animation:
+                speakingPulse
+                0.8s infinite;
+
+        }
+
+
+        .core::before {
+
+            content: "";
+
+            width: 75px;
+
+            height: 75px;
+
+            border-radius: 50%;
+
+            border:
+                2px solid
+                #38bdf8;
+
+            box-shadow:
+                0 0 25px
+                #38bdf8;
+
+        }
+
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+
+                transform:
+                    scale(1);
+
+            }
+
+            50% {
+
+                transform:
+                    scale(1.08);
+
+            }
+
+        }
+
+
+        @keyframes speakingPulse {
+
+            0%,
+            100% {
+
+                transform:
+                    scale(1);
+
+            }
+
+            50% {
+
+                transform:
+                    scale(1.12);
+
+            }
+
+        }
+
+
+        h1 {
+
+            letter-spacing:
+                8px;
+
+            font-size:
+                30px;
+
+            margin-bottom:
+                8px;
+
+        }
+
+
+        .status {
+
+            color:
+                #38bdf8;
+
+            margin-bottom:
+                25px;
+
+        }
+
+
+        .output {
+
+            min-height:
+                80px;
+
+            padding:
+                18px;
+
+            margin-bottom:
+                20px;
+
+            border-radius:
+                15px;
+
+            background:
+                rgba(
+                    15,
+                    23,
+                    42,
+                    0.8
+                );
+
+            color:
+                #cbd5e1;
+
+            line-height:
+                1.6;
+
+            word-break:
+                break-word;
+
+        }
+
+
+        .start-btn {
+
+            border: none;
+
+            border-radius:
+                50px;
+
+            padding:
+                14px 30px;
+
+            font-size:
+                16px;
+
+            font-weight:
+                bold;
+
+            cursor:
+                pointer;
+
+            color:
+                white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0284c7,
+                    #2563eb
+                );
+
+            box-shadow:
+                0 8px 25px
+                rgba(
+                    37,
+                    99,
+                    235,
+                    0.3
+                );
+
+            transition:
+                0.2s;
+
+        }
+
+
+        .start-btn:hover {
+
+            transform:
+                translateY(-2px);
+
+        }
+
+
+        .start-btn:disabled {
+
+            opacity:
+                0.5;
+
+            cursor:
+                not-allowed;
+
+        }
+
+
+        .start-btn.stop {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #dc2626,
+                    #991b1b
+                );
+
+        }
+
+
+        .command {
+
+            margin-top:
+                20px;
+
+            color:
+                #64748b;
+
+            font-size:
+                13px;
+
+        }
+
+
+        .voice-status {
+
+            margin-top:
+                12px;
+
+            color:
+                #64748b;
+
+            font-size:
+                12px;
+
+        }
+
+
+        @media (max-width: 480px) {
+
+            .jarvis {
+
+                padding:
+                    30px 18px;
+
+            }
+
+
+            .core {
+
+                width:
+                    125px;
+
+                height:
+                    125px;
+
+            }
+
+
+            .core::before {
+
+                width:
+                    62px;
+
+                height:
+                    62px;
+
+            }
+
+
+            h1 {
+
+                font-size:
+                    25px;
+
+                letter-spacing:
+                    6px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="jarvis">
+
+
+        <div
+            class="core"
+            id="core"
+        ></div>
+
+
+        <h1>
+            Dnyanu
+        </h1>
+
+
+        <div
+            class="status"
+            id="status"
+        >
+            System Ready
+        </div>
+
+
+        <div
+            class="output"
+            id="output"
+        >
+            Click Start and say
+            "Hello Dnyanu".
+        </div>
+
+
+        <button
+            class="start-btn"
+            id="startButton"
+        >
+            🎙️ Start JARVIS
+        </button>
+
+
+        <div class="command">
+
+            Say:
+            "Hello Jarvis"
+
+        </div>
+
+
+        <div
+            class="voice-status"
+            id="voiceStatus"
+        >
+            Voice: MiniMax JARVIS
+
+        </div>
+
+
+    </div>
+
+
+
+<script>
+
+
+/*
+====================================================
+                SPEECH RECOGNITION
+====================================================
+*/
+
+const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+
+/*
+====================================================
+                    ELEMENTS
+====================================================
+*/
+
+const startButton =
+    document.getElementById(
+        "startButton"
+    );
+
+
+const output =
+    document.getElementById(
+        "output"
+    );
+
+
+const status =
+    document.getElementById(
+        "status"
+    );
+
+
+const core =
+    document.getElementById(
+        "core"
+    );
+
+
+const voiceStatus =
+    document.getElementById(
+        "voiceStatus"
+    );
+
+
+/*
+====================================================
+              BROWSER SUPPORT CHECK
+====================================================
+*/
+
+if (!SpeechRecognition) {
+
+    output.textContent =
+        "Speech recognition is not supported in this browser.";
+
+    startButton.disabled =
+        true;
+
+    voiceStatus.textContent =
+        "Speech recognition unavailable.";
+
+} else {
+
+
+    /*
+    ==================================================
+                    CONFIGURATION
+    ==================================================
+    */
+
+    const API_URL =
+        "http://localhost:5000/api/jarvis";
+
+
+    const CONVERSATION_TIMEOUT =
+        8000;
+
+
+    /*
+    ==================================================
+                    RECOGNITION
+    ==================================================
+    */
+
+    const recognition =
+        new SpeechRecognition();
+
+
+    recognition.lang =
+        "en-IN";
+
+
+    recognition.continuous =
+        false;
+
+
+    recognition.interimResults =
+        false;
+
+
+    /*
+    ==================================================
+                       STATE
+    ==================================================
+    */
+
+    let running =
+        false;
+
+
+    let mode =
+        "wake";
+
+
+    let speaking =
+        false;
+
+
+    let processing =
+        false;
+
+
+    let recognitionRunning =
+        false;
+
+
+    let conversationTimer =
+        null;
+
+
+    let currentAudio =
+        null;
+
+
+
+    /*
+    ==================================================
+                CLEAR CONVERSATION TIMER
+    ==================================================
+    */
+
+    function clearConversationTimer() {
+
+        if (conversationTimer) {
+
+            clearTimeout(
+                conversationTimer
+            );
+
+            conversationTimer =
+                null;
+
+        }
+
+    }
+
+
+
+    /*
+    ==================================================
+                CONVERSATION TIMEOUT
+    ==================================================
+    */
+
+    function startConversationTimer() {
+
+        clearConversationTimer();
+
+
+        conversationTimer =
+            setTimeout(() => {
+
+
+                if (
+                    !running ||
+                    speaking ||
+                    processing
+                ) {
+
+                    return;
+
+                }
+
+
+                mode =
+                    "wake";
+
+
+                status.textContent =
+                    "Listening for wake word...";
+
+
+                output.textContent =
+                    'Say "Hello Jarvis"';
+
+
+                console.log(
+                    "Conversation timeout → Wake mode"
+                );
+
+
+                startListening();
+
+
+            }, CONVERSATION_TIMEOUT);
+
+    }
+
+
+
+    /*
+    ==================================================
+                  START LISTENING
+    ==================================================
+    */
+
+    function startListening() {
+
+
+        if (
+            !running ||
+            speaking ||
+            processing ||
+            recognitionRunning
+        ) {
+
+            return;
+
+        }
+
+
+        try {
+
+            recognition.start();
+
+            recognitionRunning =
+                true;
+
+        } catch (error) {
+
+            console.log(
+                "Recognition start:",
+                error.message
+            );
+
+        }
+
+    }
+
+
+
+    /*
+    ==================================================
+                   STOP LISTENING
+    ==================================================
+    */
+
+    function stopListening() {
+
+
+        if (
+            !recognitionRunning
+        ) {
+
+            return;
+
+        }
+
+
+        try {
+
+            recognition.stop();
+
+        } catch (error) {
+
+            console.log(
+                "Recognition stop:",
+                error.message
+            );
+
+        }
+
+    }
+
+
+
+    /*
+    ==================================================
+                  RECOGNITION START
+    ==================================================
+    */
+
+    recognition.onstart = () => {
+
+
+        recognitionRunning =
+            true;
+
+
+        core.classList.add(
+            "listening"
+        );
+
+
+        console.log(
+            "🎙️ Listening:",
+            mode
+        );
+
+
+        if (
+            mode === "wake"
+        ) {
+
+            status.textContent =
+                "Listening for wake word...";
+
+        } else {
+
+            status.textContent =
+                "Listening for command...";
+
+        }
+
+    };
+
+
+
+    /*
+    ==================================================
+                  RECOGNITION RESULT
+    ==================================================
+    */
+
+    recognition.onresult =
+        async (event) => {
+
+
+            const transcript =
+                event.results[0][0]
+                    .transcript
+                    .toLowerCase()
+                    .trim();
+
+
+            console.log(
+                "🎙️ Heard:",
+                transcript
+            );
+
+
+            stopListening();
+
+
+            /*
+            ==========================================
+                        WAKE MODE
+            ==========================================
+            */
+
+            if (
+                mode === "wake"
+            ) {
+
+
+                const wakeDetected =
+
+                    transcript.includes(
+                        "hello jarvis"
+                    )
+
+                    ||
+
+                    transcript.includes(
+                        "hey jarvis"
+                    )
+
+                    ||
+
+                    transcript ===
+                        "jarvis";
+
+
+                if (
+                    wakeDetected
+                ) {
+
+
+                    clearConversationTimer();
+
+
+                    await activateJarvis();
+
+
+                } else {
+
+
+                    setTimeout(() => {
+
+                        startListening();
+
+                    }, 400);
+
+                }
+
+
+                return;
+
+            }
+
+
+
+            /*
+            ==========================================
+                     COMMAND MODE
+            ==========================================
+            */
+
+            if (
+                mode === "command"
+            ) {
+
+
+                if (
+                    !transcript
+                ) {
+
+                    setTimeout(() => {
+
+                        startListening();
+
+                    }, 400);
+
+                    return;
+
+                }
+
+
+                await processCommand(
+                    transcript
+                );
+
+            }
+
+        };
+
+
+
+    /*
+    ==================================================
+                   RECOGNITION END
+    ==================================================
+    */
+
+    recognition.onend = () => {
+
+
+        recognitionRunning =
+            false;
+
+
+        core.classList.remove(
+            "listening"
+        );
+
+
+        console.log(
+            "🎙️ Recognition ended"
+        );
+
+    };
+
+
+
+    /*
+    ==================================================
+                   RECOGNITION ERROR
+    ==================================================
+    */
+
+    recognition.onerror =
+        (event) => {
+
+
+            recognitionRunning =
+                false;
+
+
+            core.classList.remove(
+                "listening"
+            );
+
+
+            console.log(
+                "Speech Error:",
+                event.error
+            );
+
+
+            /*
+            ==========================================
+                    MICROPHONE PERMISSION
+            ==========================================
+            */
+
+            if (
+                event.error ===
+                "not-allowed"
+            ) {
+
+
+                running =
+                    false;
+
+
+                status.textContent =
+                    "Microphone permission denied.";
+
+
+                output.textContent =
+                    "Please allow microphone permission.";
+
+
+                return;
+
+            }
+
+
+
+            /*
+            ==========================================
+                        NO SPEECH
+            ==========================================
+            */
+
+            if (
+                event.error ===
+                "no-speech"
+            ) {
+
+
+                if (
+                    running &&
+                    !speaking &&
+                    !processing
+                ) {
+
+
+                    setTimeout(() => {
+
+                        startListening();
+
+                    }, 500);
+
+                }
+
+
+                return;
+
+            }
+
+
+
+            /*
+            ==========================================
+                         ABORTED
+            ==========================================
+            */
+
+            if (
+                event.error ===
+                "aborted"
+            ) {
+
+                return;
+
+            }
+
+
+
+            /*
+            ==========================================
+                       OTHER ERRORS
+            ==========================================
+            */
+
+            if (
+                running &&
+                !speaking &&
+                !processing
+            ) {
+
+
+                setTimeout(() => {
+
+                    startListening();
+
+                }, 700);
+
+            }
+
+        };
+
+
+
+    /*
+    ==================================================
+                   ACTIVATE JARVIS
+    ==================================================
+    */
+
+    async function activateJarvis() {
+
+
+        mode =
+            "command";
+
+
+        core.classList.remove(
+            "listening"
+        );
+
+
+        core.classList.add(
+            "active"
+        );
+
+
+        status.textContent =
+            "JARVIS Activated";
+
+
+        output.textContent =
+            "Yes, I'm listening.";
+
+
+        /*
+        ==========================================
+        TEMPORARY ACTIVATION VOICE
+        ==========================================
+        
+        Main responses use MiniMax.
+        Activation uses browser voice
+        so no extra API request is required.
+        ==========================================
+        */
+
+        await browserSpeak(
+            "Yes, I'm listening."
+        );
+
+
+        if (
+            !running
+        ) {
+
+            return;
+
+        }
+
+
+        core.classList.remove(
+            "active"
+        );
+
+
+        status.textContent =
+            "Listening for command...";
+
+
+        setTimeout(() => {
+
+            startListening();
+
+        }, 300);
+
+    }
+
+
+
+    /*
+    ==================================================
+                   PROCESS COMMAND
+    ==================================================
+    */
+
+    async function processCommand(
+        command
+    ) {
+
+
+        processing =
+            true;
+
+
+        clearConversationTimer();
+
+
+        status.textContent =
+            "Processing...";
+
+
+        output.textContent =
+            `You: ${command}`;
+
+
+        console.log(
+            "Sending command to server:",
+            command
+        );
+
+
+        try {
+
+
+            const response =
+                await fetch(
+                    API_URL,
+                    {
+
+                        method:
+                            "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json"
+
+                        },
+
+                        body:
+                            JSON.stringify({
+
+                                command
+
+                            })
+
+                    }
+                );
+
+
+
+            console.log(
+                "Server status:",
+                response.status
+            );
+
+
+
+            if (
+                !response.ok
+            ) {
+
+                throw new Error(
+                    `Server returned ${response.status}`
+                );
+
+            }
+
+
+
+            const data =
+                await response.json();
+
+
+
+            console.log(
+                "JARVIS Response:",
+                data
+            );
+
+
+
+            /*
+            ==========================================
+                     GET TEXT RESPONSE
+            ==========================================
+            */
+
+            const answer =
+
+                typeof data.response ===
+                    "string"
+
+                    ?
+
+                    data.response
+
+                    :
+
+                    data.response?.response
+
+                    ||
+
+                    "I don't have a response for that.";
+
+
+
+            output.textContent =
+                `JARVIS: ${answer}`;
+
+
+
+            /*
+            ==========================================
+                    MINI MAX AUDIO RESPONSE
+            ==========================================
+            */
+
+            if (
+                data.audio
+            ) {
+
+
+                voiceStatus.textContent =
+                    "Voice: MiniMax JARVIS";
+
+
+                await playMiniMaxAudio(
+                    data.audio
+                );
+
+
+            } else {
+
+
+                /*
+                ======================================
+                FALLBACK
+                ======================================
+                */
+
+                console.warn(
+                    "No MiniMax audio received."
+                );
+
+
+                voiceStatus.textContent =
+                    "Voice: Browser fallback";
+
+
+                await browserSpeak(
+                    answer
+                );
+
+            }
+
+
+        } catch (error) {
+
+
+            console.error(
+                "JARVIS API Error:",
+                error
+            );
+
+
+            output.textContent =
+                "Unable to connect to JARVIS server.";
+
+
+            voiceStatus.textContent =
+                "Voice: Error";
+
+
+            await browserSpeak(
+                "I'm unable to connect to my main system."
+            );
+
+        }
+
+
+
+        /*
+        ==================================================
+                        RESET STATE
+        ==================================================
+        */
+
+        processing =
+            false;
+
+
+        speaking =
+            false;
+
+
+        core.classList.remove(
+            "active"
+        );
+
+
+        core.classList.remove(
+            "speaking"
+        );
+
+
+        if (
+            !running
+        ) {
+
+            return;
+
+        }
+
+
+        /*
+        ==========================================
+               STAY IN CONVERSATION MODE
+        ==========================================
+        */
+
+        mode =
+            "command";
+
+
+        status.textContent =
+            "Listening for command...";
+
+
+        setTimeout(() => {
+
+            startListening();
+
+        }, 500);
+
+
+        /*
+        ==========================================
+             8 SECOND CONVERSATION TIMEOUT
+        ==========================================
+        */
+
+        startConversationTimer();
+
+    }
+
+
+
+    /*
+    ==================================================
+                  MINI MAX AUDIO PLAYER
+    ==================================================
+    */
+
+    function playMiniMaxAudio(
+        base64Audio
+    ) {
+
+
+        return new Promise(
+            (resolve) => {
+
+
+                if (
+                    !base64Audio
+                ) {
+
+                    resolve();
+
+                    return;
+
+                }
+
+
+                /*
+                ======================================
+                    STOP PREVIOUS AUDIO
+                ======================================
+                */
+
+                if (
+                    currentAudio
+                ) {
+
+                    try {
+
+                        currentAudio.pause();
+
+                        currentAudio.currentTime =
+                            0;
+
+                    } catch (
+                        error
+                    ) {
+
+                        console.log(
+                            "Previous audio error:",
+                            error
+                        );
+
+                    }
+
+                }
+
+
+                /*
+                ======================================
+                      CREATE MP3 AUDIO
+                ======================================
+                */
+
+                const audio =
+                    new Audio(
+                        `data:audio/mpeg;base64,${base64Audio}`
+                    );
+
+
+                currentAudio =
+                    audio;
+
+
+                speaking =
+                    true;
+
+
+                core.classList.remove(
+                    "listening"
+                );
+
+
+                core.classList.add(
+                    "speaking"
+                );
+
+
+                status.textContent =
+                    "JARVIS is speaking...";
+
+
+                voiceStatus.textContent =
+                    "Voice: MiniMax JARVIS";
+
+
+                /*
+                ======================================
+                         AUDIO ENDED
+                ======================================
+                */
+
+                audio.onended = () => {
+
+
+                    speaking =
+                        false;
+
+
+                    core.classList.remove(
+                        "speaking"
+                    );
+
+
+                    currentAudio =
+                        null;
+
+
+                    status.textContent =
+                        "Listening for command...";
+
+
+                    resolve();
+
+                };
+
+
+                /*
+                ======================================
+                         AUDIO ERROR
+                ======================================
+                */
+
+                audio.onerror = () => {
+
+
+                    console.error(
+                        "MiniMax audio playback failed."
+                    );
+
+
+                    speaking =
+                        false;
+
+
+                    core.classList.remove(
+                        "speaking"
+                    );
+
+
+                    currentAudio =
+                        null;
+
+
+                    resolve();
+
+                };
+
+
+                /*
+                ======================================
+                         PLAY AUDIO
+                ======================================
+                */
+
+                audio.play()
+                    .catch((error) => {
+
+
+                        console.error(
+                            "Audio play error:",
+                            error
+                        );
+
+
+                        speaking =
+                            false;
+
+
+                        core.classList.remove(
+                            "speaking"
+                        );
+
+
+                        currentAudio =
+                            null;
+
+
+                        resolve();
+
+                    });
+
+            }
+        );
+
+    }
+
+
+
+    /*
+    ==================================================
+              BROWSER SPEECH FALLBACK
+    ==================================================
+    */
+
+    function browserSpeak(
+        text
+    ) {
+
+
+        return new Promise(
+            (resolve) => {
+
+
+                if (
+                    !window.speechSynthesis
+                ) {
+
+                    resolve();
+
+                    return;
+
+                }
+
+
+                speaking =
+                    true;
+
+
+                core.classList.remove(
+                    "listening"
+                );
+
+
+                core.classList.add(
+                    "speaking"
+                );
+
+
+                window.speechSynthesis.cancel();
+
+
+                const utterance =
+                    new SpeechSynthesisUtterance(
+                        text
+                    );
+
+
+                utterance.lang =
+                    "en-IN";
+
+
+                utterance.rate =
+                    0.95;
+
+
+                utterance.pitch =
+                    0.8;
+
+
+                utterance.volume =
+                    1;
+
+
+                utterance.onend =
+                    () => {
+
+
+                        speaking =
+                            false;
+
+
+                        core.classList.remove(
+                            "speaking"
+                        );
+
+
+                        resolve();
+
+                    };
+
+
+                utterance.onerror =
+                    () => {
+
+
+                        speaking =
+                            false;
+
+
+                        core.classList.remove(
+                            "speaking"
+                        );
+
+
+                        resolve();
+
+                    };
+
+
+                window.speechSynthesis.speak(
+                    utterance
+                );
+
+            }
+        );
+
+    }
+
+
+
+    /*
+    ==================================================
+                    START JARVIS
+    ==================================================
+    */
+
+    function startJarvis() {
+
+
+        if (
+            running
+        ) {
+
+            return;
+
+        }
+
+
+        running =
+            true;
+
+
+        mode =
+            "wake";
+
+
+        speaking =
+            false;
+
+
+        processing =
+            false;
+
+
+        clearConversationTimer();
+
+
+        startButton.textContent =
+            "🛑 Stop JARVIS";
+
+
+        startButton.classList.add(
+            "stop"
+        );
+
+
+        status.textContent =
+            "Listening for wake word...";
+
+
+        output.textContent =
+            'Say "Hello Jarvis"';
+
+
+        voiceStatus.textContent =
+            "Voice: MiniMax JARVIS";
+
+
+        setTimeout(() => {
+
+            startListening();
+
+        }, 300);
+
+    }
+
+
+
+    /*
+    ==================================================
+                     STOP JARVIS
+    ==================================================
+    */
+
+    function stopJarvis() {
+
+
+        running =
+            false;
+
+
+        processing =
+            false;
+
+
+        speaking =
+            false;
+
+
+        mode =
+            "wake";
+
+
+        clearConversationTimer();
+
+
+        stopListening();
+
+
+        /*
+        ==========================================
+                  STOP MINI MAX AUDIO
+        ==========================================
+        */
+
+        if (
+            currentAudio
+        ) {
+
+            try {
+
+                currentAudio.pause();
+
+                currentAudio.currentTime =
+                    0;
+
+            } catch (
+                error
+            ) {
+
+                console.log(
+                    "Audio stop error:",
+                    error
+                );
+
+            }
+
+
+            currentAudio =
+                null;
+
+        }
+
+
+        /*
+        ==========================================
+                  STOP BROWSER SPEECH
+        ==========================================
+        */
+
+        if (
+            window.speechSynthesis
+        ) {
+
+            window.speechSynthesis.cancel();
+
+        }
+
+
+        /*
+        ==========================================
+                     RESET UI
+        ==========================================
+        */
+
+        core.classList.remove(
+            "listening"
+        );
+
+
+        core.classList.remove(
+            "active"
+        );
+
+
+        core.classList.remove(
+            "speaking"
+        );
+
+
+        status.textContent =
+            "System Offline";
+
+
+        output.textContent =
+            "JARVIS stopped.";
+
+
+        voiceStatus.textContent =
+            "Voice: Offline";
+
+
+        startButton.textContent =
+            "🎙️ Start JARVIS";
+
+
+        startButton.classList.remove(
+            "stop"
+        );
+
+    }
+
+
+
+    /*
+    ==================================================
+                       BUTTON
+    ==================================================
+    */
+
+    startButton.addEventListener(
+        "click",
+        () => {
+
+
+            if (
+                running
+            ) {
+
+                stopJarvis();
+
+            } else {
+
+                startJarvis();
+
+            }
+
+        }
+    );
+
+}
+
+</script>
+
+
+</body>
+
+</html>
