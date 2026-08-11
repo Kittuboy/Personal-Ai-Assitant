@@ -6,28 +6,6 @@ dotenv.config({
 });
 
 
-console.log(
-    "GROQ KEY:",
-    process.env.GROQ_API_KEY
-        ? "LOADED"
-        : "NOT LOADED"
-);
-
-console.log(
-    "MINIMAX KEY:",
-    process.env.MINIMAX_API_KEY
-        ? "LOADED"
-        : "NOT LOADED"
-);
-
-console.log(
-    "MINIMAX VOICE:",
-    process.env.MINIMAX_VOICE_ID
-        ? "LOADED"
-        : "NOT LOADED"
-);
-
-
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
