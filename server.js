@@ -48,13 +48,49 @@ const generateSpeech =
 const app = express();
 
 
+const allowedOrigins = [
+    "https://personal-ai-assitant-oy1y.onrender.com",
+    "http://localhost:5000",
+    "http://localhost:5173",
+];
+
 app.use(
     cors({
-        origin: "https://personal-ai-assitant-oy1y.onrender.com",
-        methods: ["GET", "POST", "OPTIONS"],
-        allowedHeaders: ["Content-Type"],
+        origin: function (origin, callback) {
+
+            // Allow requests without origin
+            // such as Postman/curl
+            if (!origin) {
+                return callback(null, true);
+            }
+
+            if (allowedOrigins.includes(origin)) {
+                return callback(null, true);
+            }
+
+            return callback(
+                new Error("Not allowed by CORS")
+            );
+        },
+
+        methods: [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "OPTIONS"
+        ],
+
+        allowedHeaders: [
+            "Content-Type",
+            "Authorization"
+        ],
+
+        optionsSuccessStatus: 204
     })
 );
+
+app.options("*", cors());
 
 app.use(
     express.json({
