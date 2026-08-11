@@ -48,11 +48,9 @@ const generateSpeech =
 const app = express();
 
 
-const cors = require("cors");
-
 app.use(
   cors({
-    origin: "https://personal-ai-assitant-oy1y.onrender.com/voice",
+    origin: "https://personal-ai-assitant-oy1y.onrender.com/",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
