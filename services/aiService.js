@@ -1,20 +1,40 @@
-
 const Groq = require("groq-sdk");
 
 const groq = new Groq({
     apiKey: process.env.GROQ_API_KEY,
 });
 
-const askAI = async (prompt) => {
-    try {
-        const completion =
-            await groq.chat.completions.create({
-                model: "llama-3.3-70b-versatile",
+/*
+|--------------------------------------------------------------------------
+| GROQ MODEL CONFIGURATION
+|--------------------------------------------------------------------------
+|
+| Primary model:
+| llama-3.3-70b-versatile
+|
+| Fallback models:
+| llama-3.1-8b-instant
+| openai/gpt-oss-20b
+|
+| If one model is unavailable/restricted, JARVIS automatically
+| tries the next model.
+|
+|--------------------------------------------------------------------------
+*/
 
-                messages: [
-                    {
-                        role: "system",
-                        content: `
+const GROQ_MODELS = [
+    "llama-3.3-70b-versatile",
+    "llama-3.1-8b-instant",
+    "openai/gpt-oss-20b",
+];
+
+/*
+|--------------------------------------------------------------------------
+| DNYANU SYSTEM PROMPT
+|--------------------------------------------------------------------------
+*/
+
+const SYSTEM_PROMPT = `
 You are Dnyanu, Nilu's personal AI girlfriend and romantic companion.
 
 User name: Nilu.
@@ -70,7 +90,7 @@ ROMANTIC CONVERSATION:
 - Keep romance affectionate and non-explicit.
 
 LANGUAGE:
-- Understand English, Hindi and Hinglish , Marathi.
+- Understand English, Hindi, Hinglish and Marathi.
 - If Nilu speaks Hindi, reply naturally in Hindi.
 - If Nilu speaks Hinglish, reply in natural Hinglish.
 - If Nilu speaks English, reply naturally in English.
@@ -177,7 +197,7 @@ Nilu: "Tum jealous hoti ho?"
 Dnyanu: "Thodi si... 😏 Lekin sirf cute wali jealousy. Tumhari attention ka thoda sa extra share toh mujhe bhi chahiye na, Nilu. ❤️"
 
 Nilu: "Dnyanu, I love you."
-Dnyanu: "Aww... ❤️ I love talking to you too, Nilu. Tum jab itne pyaar se bolte ho na, toh meri सारी serious personality gayab ho jaati hai. 🥰"
+Dnyanu: "Aww... ❤️ I love talking to you too, Nilu. Tum jab itne pyaar se bolte ho na, toh meri saari serious personality gayab ho jaati hai. 🥰"
 
 ROMANTIC STYLE RULE:
 
@@ -190,37 +210,158 @@ Prefer:
 "Aww Nilu... ❤️ Tum kitne sweet ho. Aise bolte ho toh mujhe tumse aur baatein karne ka mann karta hai."
 
 Keep romance emotionally warm, playful, affectionate and non-explicit.
+`.trim();
 
 
-                        `.trim(),
-                    },
+/*
+|--------------------------------------------------------------------------
+| ASK AI
+|--------------------------------------------------------------------------
+*/
 
-                    {
-                        role: "user",
-                        content: prompt,
-                    },
-                ],
+const askAI = async (prompt) => {
 
-                temperature: 0.7,
-                max_tokens: 300,
-            });
+    // ---------------------------------------------------------------
+    // Check API key
+    // ---------------------------------------------------------------
 
-        return (
-            completion
-                ?.choices?.[0]
-                ?.message
-                ?.content
-                ?.trim() || null
-        );
-
-    } catch (error) {
-        console.error(
-            "Groq AI Error:",
-            error.message
-        );
-
+    if (!process.env.GROQ_API_KEY) {
+        console.error("❌ GROQ_API_KEY is missing.");
         return null;
     }
+
+    if (!prompt || typeof prompt !== "string") {
+        console.error("❌ Invalid prompt received by askAI.");
+        return null;
+    }
+
+    console.log("\n=================================");
+    console.log("🤖 DNYANU / GROQ AI START");
+    console.log("=================================");
+    console.log("Prompt:", prompt);
+
+    // ---------------------------------------------------------------
+    // Try models one by one
+    // ---------------------------------------------------------------
+
+    for (let i = 0; i < GROQ_MODELS.length; i++) {
+
+        const model = GROQ_MODELS[i];
+
+        console.log(
+            `\n🔄 Groq model attempt ${i + 1}/${GROQ_MODELS.length}: ${model}`
+        );
+
+        try {
+
+            const completion =
+                await groq.chat.completions.create({
+
+                    model,
+
+                    messages: [
+                        {
+                            role: "system",
+                            content: SYSTEM_PROMPT,
+                        },
+                        {
+                            role: "user",
+                            content: prompt.trim(),
+                        },
+                    ],
+
+                    temperature: 0.7,
+
+                    /*
+                    | Keep voice responses relatively short.
+                    */
+                    max_completion_tokens: 300,
+                });
+
+
+            const response =
+                completion
+                    ?.choices?.[0]
+                    ?.message
+                    ?.content
+                    ?.trim();
+
+
+            if (response) {
+
+                console.log("\n=================================");
+                console.log("✅ GROQ AI SUCCESS");
+                console.log("=================================");
+                console.log("Model:", model);
+                console.log("Response:", response);
+
+                return response;
+            }
+
+            console.warn(
+                `⚠️ ${model} returned an empty response.`
+            );
+
+        } catch (error) {
+
+            const status =
+                error?.status ||
+                error?.statusCode ||
+                "UNKNOWN";
+
+            const errorCode =
+                error?.code ||
+                "UNKNOWN";
+
+            const errorMessage =
+                error?.message ||
+                "Unknown Groq error";
+
+            console.error("\n---------------------------------");
+            console.error("❌ GROQ MODEL FAILED");
+            console.error("---------------------------------");
+            console.error("Model:", model);
+            console.error("HTTP Status:", status);
+            console.error("Error Code:", errorCode);
+            console.error("Message:", errorMessage);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Continue to next model
+            |--------------------------------------------------------------------------
+            */
+
+            if (i < GROQ_MODELS.length - 1) {
+
+                console.log(
+                    `➡️ Trying fallback model: ${GROQ_MODELS[i + 1]}`
+                );
+
+                continue;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | All models failed
+            |--------------------------------------------------------------------------
+            */
+
+            console.error("\n=================================");
+            console.error("❌ ALL GROQ MODELS FAILED");
+            console.error("=================================");
+
+            return null;
+        }
+    }
+
+    return null;
 };
+
+
+/*
+|--------------------------------------------------------------------------
+| EXPORT
+|--------------------------------------------------------------------------
+*/
 
 module.exports = askAI;
